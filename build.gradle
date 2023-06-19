@@ -3,6 +3,7 @@ plugins {
 	id 'io.spring.dependency-management' version '1.0.13.RELEASE'
 	id 'java'
 	id 'jacoco'
+	id "org.sonarqube" version "4.2.1.3168"
 }
 
 group = 'com.pragma.powerup'
@@ -56,6 +57,25 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
+sonarqube {
+	properties {
+		property "sonar.projectKey", "sofmillan_foodcourt-micro"
+		property "sonar.organization", "sofmillan"
+		property "sonar.host.url", "https://sonarcloud.io"
+	}
+}
+
+jacocoTestReport {
+	reports {
+		xml.enabled true
+	}
+	dependsOn test
+}
+
 test {
 	finalizedBy jacocoTestReport
+}
+
+tasks.named('sonar').configure {
+	dependsOn jacocoTestReport
 }
