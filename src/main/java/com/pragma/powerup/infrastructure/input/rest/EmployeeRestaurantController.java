@@ -2,7 +2,6 @@ package com.pragma.powerup.infrastructure.input.rest;
 
 
 import com.pragma.powerup.application.dto.request.RestaurantEmployeeRequestDto;
-import com.pragma.powerup.application.dto.request.RestaurantRequestDto;
 import com.pragma.powerup.application.handler.IRestaurantEmployeeHandler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -32,7 +31,7 @@ public class EmployeeRestaurantController {
             @ApiResponse(responseCode = "400", description = "Some data is not valid, check it", content = @Content),
     })
     @PostMapping("/employee")
-    public ResponseEntity<Void> saveRestaurant(@RequestBody @Valid RestaurantEmployeeRequestDto restaurantEmployeeRequestDto,
+    public ResponseEntity<Void> associateEmployee(@RequestBody @Valid RestaurantEmployeeRequestDto restaurantEmployeeRequestDto,
                                                @Parameter(description = "Authorization token") @RequestHeader("Authorization") String token) {
         restaurantEmployeeHandler.associateEmployee(restaurantEmployeeRequestDto, token);
         return new ResponseEntity<>(HttpStatus.CREATED);

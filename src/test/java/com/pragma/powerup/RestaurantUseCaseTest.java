@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class RestaurantUseCaseTest {
+class RestaurantUseCaseTest {
     UserClientPort userClientPort;
     IRestaurantPersistencePort restaurantPersistence;
     IRestaurantServicePort restaurantService;

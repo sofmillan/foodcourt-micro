@@ -4,12 +4,9 @@ import com.pragma.powerup.domain.api.IDishServicePort;
 import com.pragma.powerup.domain.client.UserClientPort;
 import com.pragma.powerup.domain.exception.ForbiddenException;
 import com.pragma.powerup.domain.model.DishModel;
-import com.pragma.powerup.domain.model.RestaurantModel;
 import com.pragma.powerup.domain.spi.IDishPersistencePort;
 import com.pragma.powerup.domain.usecase.DishUseCase;
-import com.pragma.powerup.domain.usecase.RestaurantUseCase;
 import com.pragma.powerup.infrastructure.out.jpa.adapter.DishJpaAdapter;
-import com.pragma.powerup.infrastructure.out.jpa.adapter.RestaurantJpaAdapter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -19,8 +16,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
-public class DishUseCaseTest {
+class DishUseCaseTest {
 
     private  IDishPersistencePort dishPersistence;
     private  UserClientPort userClientPort;

@@ -40,7 +40,6 @@ public class UserClientAdapter implements UserClientPort {
 
     @Override
     public String findPhoneByClientId(Long clientId) {
-        System.out.println(clientId);
         return userServiceClient.findPhoneById(clientId);
     }
 

@@ -3,7 +3,6 @@ package com.pragma.powerup.infrastructure.out.jpa.entity;
 import lombok.*;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 
 @Entity
 @Table(name="restaurant_employee")

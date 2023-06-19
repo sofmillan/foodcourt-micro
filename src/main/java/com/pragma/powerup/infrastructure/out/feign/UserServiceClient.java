@@ -1,7 +1,6 @@
 package com.pragma.powerup.infrastructure.out.feign;
 
 import com.pragma.powerup.infrastructure.configuration.FeignClientConfig;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
