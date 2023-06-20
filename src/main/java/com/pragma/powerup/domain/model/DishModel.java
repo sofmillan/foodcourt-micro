@@ -76,17 +76,4 @@ public class DishModel {
         this.restaurantId = restaurantId;
     }
 
-    @Override
-    public String toString() {
-        return "DishModel{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", price=" + price +
-                ", description='" + description + '\'' +
-                ", imageUrl='" + imageUrl + '\'' +
-                ", active=" + active +
-                ", categoryId=" + categoryId +
-                ", restaurantId=" + restaurantId +
-                '}';
-    }
 }

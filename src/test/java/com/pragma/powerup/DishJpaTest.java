@@ -3,6 +3,7 @@ package com.pragma.powerup;
 import com.pragma.powerup.domain.model.DishModel;
 import com.pragma.powerup.domain.exception.DataNotFoundException;
 import com.pragma.powerup.domain.exception.NotModifiableException;
+import com.pragma.powerup.domain.model.RestaurantModel;
 import com.pragma.powerup.domain.spi.IDishPersistencePort;
 import com.pragma.powerup.infrastructure.out.jpa.adapter.DishJpaAdapter;
 import com.pragma.powerup.infrastructure.out.jpa.entity.CategoryEntity;
@@ -14,6 +15,8 @@ import com.pragma.powerup.infrastructure.out.jpa.repository.DishRepository;
 import com.pragma.powerup.infrastructure.out.jpa.repository.RestaurantRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 
 import java.util.HashMap;
@@ -25,16 +28,12 @@ import static org.mockito.Mockito.*;
 
 class DishJpaTest {
 
-    private RestaurantRepository restaurantRepository;
-
-    private CategoryRepository categoryRepository;
-
-    private DishRepository dishRepository;
-
-    private IDishEntityMapper dishEntityMapper;
-
-    private IDishPersistencePort dishPersistence;
-    private DishModel dishModel;
+    RestaurantRepository restaurantRepository;
+    CategoryRepository categoryRepository;
+    DishRepository dishRepository;
+    IDishEntityMapper dishEntityMapper;
+    IDishPersistencePort dishPersistence;
+    DishModel dishModel;
 
     Long dishIdSearch;
 
@@ -47,12 +46,12 @@ class DishJpaTest {
         dishEntityMapper = mock(IDishEntityMapper.class);
         dishPersistence = new DishJpaAdapter(restaurantRepository, categoryRepository, dishRepository, dishEntityMapper);
         dishModel = new DishModel();
-        dishModel.setActive(true);
         dishModel.setRestaurantId(1L);
         dishModel.setCategoryId(2L);
         dishModel.setPrice(10000);
         dishModel.setName("Tiramisu");
         dishModel.setImageUrl("http//:image.png");
+        dishModel.setDescription("This is the description");
         dishIdSearch = 1L;
     }
 
@@ -73,6 +72,18 @@ class DishJpaTest {
 
         assertThrows(DataNotFoundException.class,
                 ()-> dishPersistence.saveDish(dishModel));
+
+    }
+
+    @Test
+    void Should_SaveDish(){
+        when(restaurantRepository.findById(dishModel.getRestaurantId())).thenReturn(Optional.of(new RestaurantEntity()));
+        when(categoryRepository.findById(dishModel.getCategoryId())).thenReturn(Optional.of(new CategoryEntity()));
+        when(dishEntityMapper.toDishEntity(dishModel)).thenReturn(new DishEntity());
+
+        dishPersistence.saveDish(dishModel);
+
+       verify(dishRepository).save(any());
 
     }
 
@@ -223,6 +234,64 @@ class DishJpaTest {
         assertThrows(NotModifiableException.class,
                 ()-> dishPersistence.updateActiveField(dishIdSearch, fields));
     }
+
+
+    @Test
+    void FindOwnerByDishShould_ThrowException_When_DishIdNotFound(){
+
+        when(dishRepository.findById(dishIdSearch)).thenReturn(Optional.empty());
+
+        assertThrows(DataNotFoundException.class,
+                ()-> dishPersistence.findOwnerByDish(dishIdSearch));
+    }
+
+    @Test
+    void ShouldFindOwnerId(){
+        RestaurantEntity restaurant = new RestaurantEntity();
+        restaurant.setAddress("804 Cone St");
+        restaurant.setLogoUrl("https://logo.png");
+        restaurant.setName("Subway");
+        restaurant.setNit("5895685");
+        restaurant.setPhoneNumber("+012555");
+        restaurant.setOwnerId(1L);
+        restaurant.setId(1L);
+        DishEntity dish = new DishEntity();
+        dish.setRestaurant(restaurant);
+
+        when(dishRepository.findById(dishIdSearch)).thenReturn(Optional.of(dish));
+        when(restaurantRepository.findById(restaurant.getOwnerId())).thenReturn(Optional.of(restaurant));
+
+        Long foundOwner = dishPersistence.findOwnerByDish(dishIdSearch);
+
+        assertThat(foundOwner).isEqualTo(restaurant.getOwnerId());
+    }
+
+    @Test
+    void ShouldFindOwnerIdByRestaurant(){
+        RestaurantEntity restaurant = new RestaurantEntity();
+        restaurant.setOwnerId(1L);
+        restaurant.setId(1L);
+
+        when(restaurantRepository.findById(restaurant.getOwnerId())).thenReturn(Optional.of(restaurant));
+
+        Long foundOwner = dishPersistence.findDishRestaurant(restaurant.getId());
+
+        assertThat(foundOwner).isEqualTo(restaurant.getOwnerId());
+    }
+
+    @Test
+    void FindOwnerIdByRestaurant_Should_ThrowDataNotFoundException_When_RestaurantIdNotFound(){
+        Long restaurantId = 1L;
+
+        when(restaurantRepository.findById(restaurantId)).thenReturn(Optional.empty());
+
+        assertThrows(DataNotFoundException.class,
+                ()-> dishPersistence.findDishRestaurant(restaurantId));
+    }
+
+
+
+
 
 
 }

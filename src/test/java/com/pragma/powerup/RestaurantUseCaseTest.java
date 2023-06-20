@@ -34,7 +34,7 @@ class RestaurantUseCaseTest {
         restaurantModel.setPhoneNumber("+5845855");
         restaurantModel.setLogoUrl("https://image.png");
         restaurantModel.setAddress("1234 NW Bobcat Lane");
-        token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJOjEOTAzMuYW1lIjoiUja3kifQ.rZp7kjty_We0xCM";
+        token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJhYmNkMTIzIiwiZXhwaXJ5IjoxNjQ2NjM1NjExMzAxfQ.3Thp81rDFrKXr3WrY1MyMnNK8kKoZBX9lg-JwFznR-M";
     }
     @Test
     void Should_ThrowForbiddenException_When_UserIsNotAdministrator(){
