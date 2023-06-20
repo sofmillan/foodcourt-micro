@@ -1,8 +1,6 @@
 package com.pragma.powerup.domain.model;
 
-import com.pragma.powerup.infrastructure.out.jpa.entity.OrderDishEntity;
-import com.pragma.powerup.infrastructure.out.jpa.entity.RestaurantEmployeeEntity;
-import com.pragma.powerup.infrastructure.out.jpa.entity.RestaurantEntity;
+
 import lombok.Data;
 
 import javax.persistence.*;

@@ -1,6 +1,5 @@
 package com.pragma.powerup.domain.model;
 
-import com.pragma.powerup.application.dto.request.OrderDishRequestDto;
 
 import java.util.List;
 

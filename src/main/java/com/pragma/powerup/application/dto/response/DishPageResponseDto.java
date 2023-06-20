@@ -8,14 +8,6 @@ public class DishPageResponseDto {
     private String imageUrl;
     private boolean active;
 
-    public DishPageResponseDto(String name, Integer price, String description, String imageUrl, boolean active) {
-        this.name = name;
-        this.price = price;
-        this.description = description;
-        this.imageUrl = imageUrl;
-        this.active = active;
-    }
-
     public DishPageResponseDto() {
     }
 

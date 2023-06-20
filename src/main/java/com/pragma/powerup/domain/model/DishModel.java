@@ -11,16 +11,6 @@ public class DishModel {
     private Long restaurantId;
 
     public DishModel(){}
-    public DishModel(Long id, String name, Integer price, String description, String imageUrl, boolean active, Long categoryId, Long restaurantId) {
-        this.id = id;
-        this.name = name;
-        this.price = price;
-        this.description = description;
-        this.imageUrl = imageUrl;
-        this.active = active;
-        this.categoryId = categoryId;
-        this.restaurantId = restaurantId;
-    }
 
     public Long getId() {
         return id;
