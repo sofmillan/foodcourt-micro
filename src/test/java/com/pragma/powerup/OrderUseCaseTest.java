@@ -1,11 +1,11 @@
 package com.pragma.powerup;
 
+import com.pragma.powerup.application.dto.response.DishResponseDto;
+import com.pragma.powerup.application.dto.response.OrderDishResponseDto;
+import com.pragma.powerup.application.dto.response.OrderPageResponseDto;
 import com.pragma.powerup.domain.client.TwilioClientPort;
 import com.pragma.powerup.domain.client.UserClientPort;
-import com.pragma.powerup.domain.model.CancelModel;
-import com.pragma.powerup.domain.model.MessageModel;
-import com.pragma.powerup.domain.model.OrderDishModel;
-import com.pragma.powerup.domain.model.OrderModel;
+import com.pragma.powerup.domain.model.*;
 import com.pragma.powerup.domain.spi.IOrderPersistencePort;
 import com.pragma.powerup.domain.usecase.OrderUseCase;
 import com.pragma.powerup.infrastructure.out.feign.TwilioClientAdapter;
@@ -14,8 +14,11 @@ import com.pragma.powerup.infrastructure.out.jpa.adapter.OrderJpaAdapter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -126,6 +129,19 @@ public class OrderUseCaseTest {
 
         assertThrows(RuntimeException.class,
                 ()-> orderService.cancelOrderTwilio(clientId));
+    }
+
+    @Test
+    void Should_ReturnOrders_When_ShowOrders(){
+        Integer numberOfElements = 1;
+        String status = "PENDING";
+        Long employeeId = 5L;
+
+        when(userClient.findEmployeeId(token)).thenReturn(employeeId);
+
+        orderService.showOrders(numberOfElements, status, token);
+
+        verify(orderPersistence).showOrders(numberOfElements, status, employeeId);
     }
 
 
