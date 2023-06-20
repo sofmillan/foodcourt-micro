@@ -15,9 +15,9 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class OrderJpaTest {
     RestaurantRepository restaurantRepository;
@@ -90,6 +90,29 @@ class OrderJpaTest {
         assertThrows(ForbiddenException.class,
                 () -> orderPersistence.updateOrderToPreparation(orderId, employeeId));
     }
+    @Test
+    void Should_UpdateStatus_When_UpdateToPreparation(){
+        Long orderId = 1L;
+        Long employeeId = 1L;
+        OrderEntity order = new OrderEntity();
+        RestaurantEntity restaurant = new RestaurantEntity();
+        RestaurantEmployeeEntity chef = new RestaurantEmployeeEntity();
+
+        restaurant.setId(1L);
+        chef.setRestaurantId(restaurant.getId());
+        order.setRestaurant(restaurant);
+        order.setStatus("PENDING");
+
+        when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
+        when(chefRepository.findByUserId(employeeId)).thenReturn(Optional.of(chef));
+
+        orderPersistence.updateOrderToPreparation(orderId, employeeId);
+
+        assertThat(order.getChefId()).isEqualTo(chef);
+        assertThat(order.getStatus()).isEqualTo("IN_PREPARATION");
+        verify(orderRepository).save(order);
+    }
+
 
 
 
@@ -135,6 +158,32 @@ class OrderJpaTest {
                 () -> orderPersistence.updateOrderToReady(orderId, employeeId, code));
     }
 
+
+    @Test
+    void Should_UpdateStatus_When_UpdateToReady(){
+        Long orderId = 1L;
+        Long employeeId = 1L;
+        String code = "a5c63";
+
+        OrderEntity order = new OrderEntity();
+        RestaurantEntity restaurant = new RestaurantEntity();
+        RestaurantEmployeeEntity chef = new RestaurantEmployeeEntity();
+
+        restaurant.setId(1L);
+        chef.setRestaurantId(restaurant.getId());
+        order.setRestaurant(restaurant);
+        order.setStatus("IN_PREPARATION");
+
+        when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
+        when(chefRepository.findByUserId(employeeId)).thenReturn(Optional.of(chef));
+
+        orderPersistence.updateOrderToReady(orderId, employeeId, code);
+
+        assertThat(order.getStatus()).isEqualTo("READY");
+        assertThat(order.getDeliveryCode()).isEqualTo(code);
+        verify(orderRepository).save(order);
+    }
+
     @Test
     void Should_ThrowDataNotValidException_When_UpdateToDeliveredWithInvalidStatus(){
         Long orderId = 1L;
@@ -175,6 +224,54 @@ class OrderJpaTest {
         when(chefRepository.findByUserId(employeeId)).thenReturn(Optional.of(chef));
         assertThrows(ForbiddenException.class,
                 () -> orderPersistence.updateOrderToDelivered(orderId, employeeId, code));
+    }
+
+    @Test
+    void Should_DataNotValidException_When_CodeNotMatch(){
+        Long orderId = 1L;
+        Long employeeId = 1L;
+        String code = "a5c63";
+        String secondCode = "b6e54";
+        OrderEntity order = new OrderEntity();
+        RestaurantEntity restaurant = new RestaurantEntity();
+        RestaurantEmployeeEntity chef = new RestaurantEmployeeEntity();
+
+        restaurant.setId(1L);
+        chef.setRestaurantId(restaurant.getId());
+        order.setRestaurant(restaurant);
+        order.setStatus("READY");
+        order.setDeliveryCode(code);
+
+        when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
+        when(chefRepository.findByUserId(employeeId)).thenReturn(Optional.of(chef));
+        assertThrows(DataNotValidException.class,
+                () -> orderPersistence.updateOrderToDelivered(orderId, employeeId, secondCode));
+    }
+
+
+    @Test
+    void Should_UpdateStatus_When_UpdateToDelivered(){
+        Long orderId = 1L;
+        Long employeeId = 1L;
+        String code = "a5c63";
+
+        OrderEntity order = new OrderEntity();
+        RestaurantEntity restaurant = new RestaurantEntity();
+        RestaurantEmployeeEntity chef = new RestaurantEmployeeEntity();
+
+        restaurant.setId(1L);
+        chef.setRestaurantId(restaurant.getId());
+        order.setRestaurant(restaurant);
+        order.setStatus("READY");
+        order.setDeliveryCode(code);
+
+        when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
+        when(chefRepository.findByUserId(employeeId)).thenReturn(Optional.of(chef));
+
+        orderPersistence.updateOrderToDelivered(orderId, employeeId, code);
+
+        assertThat(order.getStatus()).isEqualTo("DELIVERED");
+        verify(orderRepository).save(order);
     }
 
     @Test
@@ -301,5 +398,19 @@ class OrderJpaTest {
         assertThrows(DataNotFoundException.class,
                 () -> orderPersistence.findClientByOrderId(orderId));
     }
+
+    @Test
+    void ShowOrders_Should_ThrowDataNotFoundException_When_EmployeeIdNotFound(){
+        Long employeeId = 1L;
+        Integer elements = 2;
+        String status = "PENDING";
+
+        when(chefRepository.findByUserId(employeeId)).thenReturn(Optional.empty());
+
+        assertThrows(DataNotFoundException.class,
+                () -> orderPersistence.showOrders(elements, status, employeeId));
+    }
+
+
 
 }
