@@ -5,10 +5,6 @@ public class MessageModel {
     private String securityCode;
 
     public MessageModel(){}
-    public MessageModel(String phoneNumber, String securityCode) {
-        this.phoneNumber = phoneNumber;
-        this.securityCode = securityCode;
-    }
 
     public String getPhoneNumber() {
         return phoneNumber;

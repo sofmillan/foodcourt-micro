@@ -1,8 +1,9 @@
 package com.pragma.powerup;
 
-import com.pragma.powerup.domain.api.IOrderServicePort;
 import com.pragma.powerup.domain.client.TwilioClientPort;
 import com.pragma.powerup.domain.client.UserClientPort;
+import com.pragma.powerup.domain.model.CancelModel;
+import com.pragma.powerup.domain.model.MessageModel;
 import com.pragma.powerup.domain.model.OrderDishModel;
 import com.pragma.powerup.domain.model.OrderModel;
 import com.pragma.powerup.domain.spi.IOrderPersistencePort;
@@ -16,6 +17,8 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 public class OrderUseCaseTest {
@@ -23,7 +26,7 @@ public class OrderUseCaseTest {
     IOrderPersistencePort orderPersistence;
     TwilioClientPort twilioClient;
     UserClientPort userClient;
-    IOrderServicePort orderService;
+    OrderUseCase orderService;
     String token;
     OrderModel orderModel;
 
@@ -84,6 +87,45 @@ public class OrderUseCaseTest {
         orderService.updateOrderToDelivered(orderId, token, code);
 
         verify(orderPersistence).updateOrderToDelivered(orderId, employeeId, code);
+    }
+
+    @Test
+    void Should_ReturnAFiveDigitCode(){
+        String code = orderService.buildTwilioCode();
+
+        assertThat(code.length()).isEqualTo(5);
+    }
+
+    @Test
+    void SendMessage_Should_ThrowException_When_TwilioServiceCannotBeUsed(){
+        String code = "zb1";
+        Long clientId = 10L;
+        String phoneNumber = "+578444154";
+
+        MessageModel messageModel = new MessageModel();
+        messageModel.setSecurityCode(code);
+        messageModel.setPhoneNumber(phoneNumber);
+
+        when(userClient.findPhoneByClientId(clientId)).thenReturn(phoneNumber);
+        when(twilioClient.sendMessage(messageModel)).thenReturn(false);
+
+        assertThrows(RuntimeException.class,
+                ()-> orderService.sendMessage(code, clientId));
+    }
+
+    @Test
+    void CancelOrder_Should_ThrowException_When_TwilioServiceCannotBeUsed(){
+        Long clientId = 10L;
+        String phoneNumber = "+578444154";
+
+        CancelModel cancelModel = new CancelModel();
+        cancelModel.setPhoneNumber(phoneNumber);
+
+        when(userClient.findPhoneByClientId(clientId)).thenReturn(phoneNumber);
+        when(twilioClient.cancel(cancelModel)).thenReturn(false);
+
+        assertThrows(RuntimeException.class,
+                ()-> orderService.cancelOrderTwilio(clientId));
     }
 
 

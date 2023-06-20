@@ -411,6 +411,34 @@ class OrderJpaTest {
                 () -> orderPersistence.showOrders(elements, status, employeeId));
     }
 
+    @Test
+    void Should_ThrowDataNotFoundException_When_OrderIdNotFound(){
+        OrderEntity order = new OrderEntity();
+        order.setId(1L);
+
+        Long orderId = 1L;
+
+        when(orderRepository.findById(orderId)).thenReturn(Optional.empty());
+
+        assertThrows(DataNotFoundException.class,
+                () -> orderPersistence.findClientByOrderId(orderId));
+    }
+
+    @Test
+    void Should_FindClientId_When_GivenOrderId(){
+        OrderEntity order = new OrderEntity();
+        order.setId(1L);
+        order.setClientId(4L);
+        Long orderId = 1L;
+        Long expectedClientId = 4L;
+
+        when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
+
+        assertThat(orderPersistence.findClientByOrderId(orderId)).isEqualTo(expectedClientId);
+    }
+
+
+
 
 
 }

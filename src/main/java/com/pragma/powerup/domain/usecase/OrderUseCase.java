@@ -69,16 +69,18 @@ public class OrderUseCase implements IOrderServicePort {
     }
 
 
-    private String buildTwilioCode() {
+    public String buildTwilioCode() {
         String randomUUID = UUID.randomUUID().toString();
         String  code = randomUUID.substring(0,5);
         return code;
     }
 
-    private void sendMessage ( String code, Long clientId){
+    public void sendMessage ( String code, Long clientId){
         String clientPhoneNumber = userClientPort.findPhoneByClientId(clientId);
         try{
-            MessageModel messageModel = new MessageModel(clientPhoneNumber, code);
+            MessageModel messageModel = new MessageModel();
+            messageModel.setPhoneNumber(clientPhoneNumber);
+            messageModel.setSecurityCode(code);
             boolean result = twilioClientPort.sendMessage(messageModel);
             if(!result){
                 throw new RuntimeException("Error using twilio");
@@ -88,7 +90,7 @@ public class OrderUseCase implements IOrderServicePort {
         }
     }
 
-    private void cancelOrderTwilio (Long clientId){
+    public void cancelOrderTwilio (Long clientId){
         String clientPhoneNumber = userClientPort.findPhoneByClientId(clientId);
         try{
             CancelModel cancelModel = new CancelModel();
