@@ -3,6 +3,10 @@ package com.pragma.powerup;
 import com.pragma.powerup.application.dto.request.OrderDishRequestDto;
 import com.pragma.powerup.application.dto.request.OrderRequestDto;
 import com.pragma.powerup.application.dto.request.SecurityCodeDto;
+import com.pragma.powerup.application.dto.response.DishResponseDto;
+import com.pragma.powerup.application.dto.response.OrderDishResponseDto;
+import com.pragma.powerup.application.dto.response.OrderPageResponseDto;
+import com.pragma.powerup.application.dto.response.RestaurantPageResponseDto;
 import com.pragma.powerup.application.handler.IOrderHandler;
 import com.pragma.powerup.application.handler.impl.OrderHandler;
 import com.pragma.powerup.infrastructure.input.rest.OrderController;
@@ -11,12 +15,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDate;
+import java.util.*;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
 class OrderControllerTest {
     IOrderHandler orderHandler;
@@ -99,6 +102,39 @@ class OrderControllerTest {
         responseEntity = orderController.cancelOrder(orderId, token);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    void Should_ReturnOrderList_When_OrdersFound(){
+        DishResponseDto dish = new DishResponseDto();
+        dish.setDescription("This is the description");
+        dish.setName("Foot long");
+        dish.setImageUrl("https://image.png");
+        dish.setId(1L);
+
+        OrderDishResponseDto orderDishResponseDto = new OrderDishResponseDto();
+        orderDishResponseDto.setAmount(1);
+        orderDishResponseDto.setId(1L);
+        orderDishResponseDto.setDish(dish);
+
+        Set<OrderDishResponseDto> responseDtoSet = new HashSet<>();
+        responseDtoSet.add(orderDishResponseDto);
+
+        OrderPageResponseDto orderPageResponseDto = new OrderPageResponseDto();
+        orderPageResponseDto.setClientId(1L);
+        orderPageResponseDto.setStatus("PENDING");
+        orderPageResponseDto.setDate(LocalDate.of(2024, 6,20));
+        orderPageResponseDto.setOrderDishes(responseDtoSet);
+        orderPageResponseDto.setId(1L);
+
+
+        int elements = 1;
+        String status = "PENDING";
+        when(orderHandler.showOrders(elements, status, token)).thenReturn(List.of(orderPageResponseDto));
+
+        List<OrderPageResponseDto> response = orderController.pageOrders(elements, status, token);
+
+        assertThat(response.size()).isEqualTo(elements);
     }
 
 

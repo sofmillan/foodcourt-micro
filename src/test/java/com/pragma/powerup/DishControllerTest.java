@@ -1,6 +1,7 @@
 package com.pragma.powerup;
 
 import com.pragma.powerup.application.dto.request.DishRequestDto;
+import com.pragma.powerup.application.dto.response.DishPageResponseDto;
 import com.pragma.powerup.application.handler.IDishHandler;
 import com.pragma.powerup.application.handler.impl.DishHandler;
 import com.pragma.powerup.infrastructure.input.rest.DishController;
@@ -9,12 +10,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.*;
 
 class DishControllerTest {
     DishController dishController;
@@ -70,5 +73,31 @@ class DishControllerTest {
 
         ResponseEntity<Void> responseEntity = dishController.updateActiveField(dishId, fields, token);
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    void Should_ReturnList_When_ShowMenu() {
+        Long restaurantId = 1L;
+        Long categoryId = 1L;
+        Integer elements = 1;
+
+        DishPageResponseDto dishPageResponseDto = new DishPageResponseDto();
+        dishPageResponseDto.setPrice(10000);
+        dishPageResponseDto.setName("Tiramisu");
+        dishPageResponseDto.setImageUrl("http//:image.png");
+        dishPageResponseDto.setDescription("This is the description");
+        dishPageResponseDto.setActive(true);
+
+        List<DishPageResponseDto> responseDtoList = new ArrayList<>();
+        responseDtoList.add(dishPageResponseDto);
+
+       when(dishHandler.showMenu(restaurantId, categoryId, elements, token)).thenReturn(List.of(dishPageResponseDto));
+
+        List<DishPageResponseDto> response = dishController.showMenu(elements, categoryId, restaurantId, token);
+
+        assertThat(response.size()).isEqualTo(responseDtoList.size());
+        assertTrue(response.contains(dishPageResponseDto));
+
+
     }
 }

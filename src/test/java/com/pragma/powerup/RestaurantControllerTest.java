@@ -1,6 +1,7 @@
 package com.pragma.powerup;
 
 import com.pragma.powerup.application.dto.request.RestaurantRequestDto;
+import com.pragma.powerup.application.dto.response.RestaurantPageResponseDto;
 import com.pragma.powerup.application.handler.IRestaurantHandler;
 import com.pragma.powerup.application.handler.impl.RestaurantHandler;
 import com.pragma.powerup.infrastructure.input.rest.RestaurantController;
@@ -9,9 +10,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
 class RestaurantControllerTest {
     IRestaurantHandler restaurantHandler;
@@ -19,6 +21,7 @@ class RestaurantControllerTest {
     RestaurantController restaurantController;
 
     RestaurantRequestDto restaurantRequestDto;
+    RestaurantPageResponseDto restaurantPageResponseDto;
     String token;
 
     @BeforeEach
@@ -43,6 +46,19 @@ class RestaurantControllerTest {
         ResponseEntity<Void> responseEntity = restaurantController.saveRestaurant(restaurantRequestDto, token);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+    }
+
+    @Test
+    void Should_ReturnRestaurantList_When_RestaurantsFound(){
+        restaurantPageResponseDto = new RestaurantPageResponseDto();
+        restaurantPageResponseDto.setLogoUrl("https://logo.png");
+        restaurantPageResponseDto.setName("Subway");
+        int elements = 1;
+        when(restaurantHandler.findRestaurants(elements, token)).thenReturn(List.of(restaurantPageResponseDto));
+
+        List<RestaurantPageResponseDto> response = restaurantController.findRestaurants(elements, token);
+
+        assertThat(response.size()).isEqualTo(elements);
     }
 
 }
