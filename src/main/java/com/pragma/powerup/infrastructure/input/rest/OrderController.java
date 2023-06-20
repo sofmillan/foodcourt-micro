@@ -32,9 +32,10 @@ public class OrderController {
             @ApiResponse(responseCode = "400", description = "Some data is not valid, check it", content = @Content),
     })
     @PostMapping("/order")
-    public void addOrder(@RequestBody OrderRequestDto orderRequestDto,
+    public ResponseEntity<Void> addOrder(@RequestBody OrderRequestDto orderRequestDto,
                          @Parameter(description = "Authorization token") @RequestHeader("Authorization") String token){
         orderHandler.addOrder(orderRequestDto, token);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @Operation(summary = "Page orders",

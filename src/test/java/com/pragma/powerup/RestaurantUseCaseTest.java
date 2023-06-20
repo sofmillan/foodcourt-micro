@@ -2,6 +2,7 @@ package com.pragma.powerup;
 
 import com.pragma.powerup.domain.api.IRestaurantServicePort;
 import com.pragma.powerup.domain.client.UserClientPort;
+import com.pragma.powerup.domain.exception.DataAlreadyExistsException;
 import com.pragma.powerup.domain.exception.DataNotValidException;
 import com.pragma.powerup.domain.model.RestaurantModel;
 import com.pragma.powerup.domain.spi.IRestaurantPersistencePort;
@@ -60,10 +61,11 @@ class RestaurantUseCaseTest {
     void Should_ThrowDataAlreadyExistsException_When_NitAlreadyExists(){
 
         when(userClientPort.validateAdministrator(token)).thenReturn(true);
-        when(userClientPort.validateOwnerById(restaurantModel.getOwnerId())).thenReturn(false);
-        when(restaurantPersistence.findRestaurantByNit(token)).thenReturn(false);
+        when(restaurantPersistence.findRestaurantByNit(restaurantModel.getNit())).thenReturn(true);
+        when(userClientPort.validateOwnerById(restaurantModel.getOwnerId())).thenReturn(true);
 
-        assertThrows(DataNotValidException.class,
+
+        assertThrows(DataAlreadyExistsException.class,
                 ()-> restaurantService.saveRestaurant(restaurantModel, token));
     }
 

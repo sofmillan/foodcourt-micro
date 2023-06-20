@@ -18,7 +18,7 @@ public class TwilioClientAdapter implements TwilioClientPort {
         try{
             return twilioServiceClient.sendMessage(messageRequestMapper.toRequestDto(messageModel));
         }catch(Exception e){
-            throw new DataNotFoundException("Could not send twilio message");
+            throw new DataNotFoundException();
         }
     }
 
@@ -27,7 +27,7 @@ public class TwilioClientAdapter implements TwilioClientPort {
         try{
             return twilioServiceClient.cancel(messageRequestMapper.toCancelDto(cancelModel));
         }catch (Exception e){
-            throw new DataNotFoundException("Could not send twilio message");
+            throw new DataNotFoundException();
 
         }
     }

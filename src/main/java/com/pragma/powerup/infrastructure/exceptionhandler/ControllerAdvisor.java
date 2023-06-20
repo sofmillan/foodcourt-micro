@@ -56,13 +56,6 @@ public class ControllerAdvisor {
                 .body(Collections.singletonMap(MESSAGE, ExceptionResponse.FORBIDDEN.getMessage()));
     }
 
-    @ExceptionHandler(UnAuthorizedException.class)
-    public ResponseEntity<Map<String, String>> handleUnauthorizedException(
-            UnAuthorizedException e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(Collections.singletonMap(MESSAGE, ExceptionResponse.NOT_REGISTERED.getMessage()));
-    }
-
     @ExceptionHandler(DataNotValidException.class)
     public ResponseEntity<Map<String, String>> handleDataNotValidException(
             DataNotValidException e) {
