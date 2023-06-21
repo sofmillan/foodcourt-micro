@@ -6,7 +6,6 @@ import com.pragma.powerup.application.dto.request.SecurityCodeDto;
 import com.pragma.powerup.application.dto.response.DishResponseDto;
 import com.pragma.powerup.application.dto.response.OrderDishResponseDto;
 import com.pragma.powerup.application.dto.response.OrderPageResponseDto;
-import com.pragma.powerup.application.dto.response.RestaurantPageResponseDto;
 import com.pragma.powerup.application.handler.IOrderHandler;
 import com.pragma.powerup.application.handler.impl.OrderHandler;
 import com.pragma.powerup.infrastructure.input.rest.OrderController;

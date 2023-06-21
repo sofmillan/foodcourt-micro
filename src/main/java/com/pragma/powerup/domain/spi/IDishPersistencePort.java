@@ -1,8 +1,6 @@
 package com.pragma.powerup.domain.spi;
 
 import com.pragma.powerup.domain.model.DishModel;
-import com.pragma.powerup.domain.model.RestaurantModel;
-import com.pragma.powerup.infrastructure.out.jpa.entity.DishEntity;
 
 import java.util.List;
 import java.util.Map;

@@ -10,10 +10,12 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class UserClientAdapterTest {
+class UserClientAdapterTest {
     UserServiceClient userServiceClient;
     UserClientPort userClient;
 
@@ -29,7 +31,8 @@ public class UserClientAdapterTest {
 
         when(userServiceClient.findOwnerById(userId)).thenReturn(false);
 
-        assertThat(userClient.validateOwnerById(userId)).isEqualTo(false);
+        assertFalse(userClient.validateOwnerById(userId));
+
     }
 
     @Test
@@ -38,7 +41,7 @@ public class UserClientAdapterTest {
 
         when(userServiceClient.roles(token)).thenReturn(List.of(Role.ADMIN.getMessage()));
 
-        assertThat(userClient.validateAdministrator(token)).isEqualTo(true);
+        assertTrue(userClient.validateAdministrator(token));
     }
 
     @Test
@@ -47,7 +50,8 @@ public class UserClientAdapterTest {
 
         when(userServiceClient.roles(token)).thenReturn(List.of(Role.EMPLOYEE.getMessage()));
 
-        assertThat(userClient.validateAdministrator(token)).isEqualTo(false);
+        assertFalse(userClient.validateAdministrator(token));
+
     }
 
     @Test
@@ -56,7 +60,7 @@ public class UserClientAdapterTest {
 
         when(userServiceClient.roles(token)).thenReturn(List.of(Role.CLIENT.getMessage()));
 
-        assertThat(userClient.validateClientByToken(token)).isEqualTo(true);
+        assertTrue(userClient.validateClientByToken(token));
     }
 
     @Test
@@ -65,7 +69,7 @@ public class UserClientAdapterTest {
 
         when(userServiceClient.roles(token)).thenReturn(List.of(Role.OWNER.getMessage()));
 
-        assertThat(userClient.validateClientByToken(token)).isEqualTo(false);
+        assertFalse(userClient.validateClientByToken(token));
     }
 
     @Test
@@ -74,7 +78,7 @@ public class UserClientAdapterTest {
 
         when(userServiceClient.findOwnerById(userId)).thenReturn(true);
 
-        assertThat(userClient.validateOwnerById(userId)).isEqualTo(true);
+        assertTrue(userClient.validateOwnerById(userId));
     }
 
   @Test

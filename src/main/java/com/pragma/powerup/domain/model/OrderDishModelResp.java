@@ -1,6 +1,6 @@
 package com.pragma.powerup.domain.model;
 
-import com.pragma.powerup.infrastructure.out.jpa.entity.DishEntity;
+
 import lombok.Data;
 
 @Data

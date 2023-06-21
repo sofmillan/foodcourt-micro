@@ -5,7 +5,7 @@ import com.pragma.powerup.domain.client.UserClientPort;
 import com.pragma.powerup.domain.exception.ForbiddenException;
 import com.pragma.powerup.domain.model.DishModel;
 import com.pragma.powerup.domain.spi.IDishPersistencePort;
-import org.springframework.context.annotation.Lazy;
+
 
 import java.util.List;
 import java.util.Map;

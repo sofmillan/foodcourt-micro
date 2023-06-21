@@ -4,9 +4,8 @@ import com.pragma.powerup.domain.model.*;
 import com.pragma.powerup.infrastructure.out.jpa.entity.DishEntity;
 import com.pragma.powerup.infrastructure.out.jpa.entity.OrderDishEntity;
 import com.pragma.powerup.infrastructure.out.jpa.entity.OrderEntity;
-import com.pragma.powerup.infrastructure.out.jpa.entity.RestaurantEmployeeEntity;
+
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
 @Mapper(
@@ -29,10 +28,4 @@ public interface IOrderEntityMapper {
 
     DishModelResp todishModelResp(DishEntity dish);
 
-  /*  @Mapping(target = "chefId", source = "entity.userId")
-    Long toOrderId(RestaurantEmployeeEntity entity);*/
-
-  /*  default Long convert(RestaurantEmployeeEntity entity) {
-        return entity.getUserId() != null ? entity.getUserId() : 0;
-    }*/
 }

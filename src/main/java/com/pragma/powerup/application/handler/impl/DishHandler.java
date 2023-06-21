@@ -41,14 +41,9 @@ public class DishHandler implements IDishHandler {
     public List<DishPageResponseDto> showMenu(Long restaurantId, Long categoryId, Integer number, String token) {
         List<DishModel> dishModelList = dishServicePort.showMenu(restaurantId,categoryId,number, token);
 
-
-        List<DishPageResponseDto> dishPageResponseDtos =
-                dishModelList
-                        .stream()
-                        .map(dishRequestMapper::toPageDto).collect(Collectors.toList());
-
-
-        return dishPageResponseDtos;
+        return dishModelList
+                .stream()
+                .map(dishRequestMapper::toPageDto).collect(Collectors.toList());
     }
 
 

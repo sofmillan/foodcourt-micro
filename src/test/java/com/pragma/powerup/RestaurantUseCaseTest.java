@@ -13,8 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class RestaurantUseCaseTest {
     UserClientPort userClientPort;
@@ -70,6 +69,19 @@ class RestaurantUseCaseTest {
     }
 
     @Test
+    void Should_SaveRestaurant(){
+
+        when(userClientPort.validateAdministrator(token)).thenReturn(true);
+        when(restaurantPersistence.findRestaurantByNit(restaurantModel.getNit())).thenReturn(false);
+        when(userClientPort.validateOwnerById(restaurantModel.getOwnerId())).thenReturn(true);
+
+        restaurantService.saveRestaurant(restaurantModel, token);
+
+
+        verify(restaurantPersistence).saveRestaurant(restaurantModel);
+    }
+
+    @Test
     void Should_ThrowForbiddenException_When_UserIsNotClient(){
 
         int numberOfElements = 4;
@@ -89,6 +101,16 @@ class RestaurantUseCaseTest {
 
         assertThrows(DataNotValidException.class,
                 ()-> restaurantService.findRestaurants(numberOfElements, token));
+    }
+
+    @Test
+    void Should_FindRestaurants(){
+        int numberOfElements = 4;
+        when(userClientPort.validateClientByToken(token)).thenReturn(true);
+
+        restaurantService.findRestaurants(numberOfElements, token);
+
+        verify(restaurantPersistence).findRestaurants(numberOfElements);
     }
 }
 
