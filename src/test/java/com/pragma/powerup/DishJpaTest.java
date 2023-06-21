@@ -256,6 +256,7 @@ class DishJpaTest {
         restaurant.setPhoneNumber("+012555");
         restaurant.setOwnerId(1L);
         restaurant.setId(1L);
+
         DishEntity dish = new DishEntity();
         dish.setRestaurant(restaurant);
 

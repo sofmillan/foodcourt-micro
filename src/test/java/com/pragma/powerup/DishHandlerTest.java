@@ -1,6 +1,7 @@
 package com.pragma.powerup;
 
 import com.pragma.powerup.application.dto.request.DishRequestDto;
+import com.pragma.powerup.application.dto.response.DishPageResponseDto;
 import com.pragma.powerup.application.handler.IDishHandler;
 import com.pragma.powerup.application.handler.impl.DishHandler;
 import com.pragma.powerup.application.mapper.IDishRequestMapper;
@@ -11,8 +12,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.*;
 
 class DishHandlerTest {
@@ -74,5 +77,31 @@ class DishHandlerTest {
         dishHandler.updateActiveField(dishId, fields, token);
 
         verify(dishService).updateActiveField(dishId, fields, token);
+    }
+
+    @Test
+    void Should_ShowMenu(){
+        Long restaurantId = 1L;
+        Long categoryId = 1L;
+        int numberOfElements = 1;
+        DishModel dishModel = new DishModel();
+        dishModel.setRestaurantId(1L);
+        dishModel.setCategoryId(2L);
+        dishModel.setPrice(10000);
+        dishModel.setName("Tiramisu");
+        dishModel.setImageUrl("http//:image.png");
+        dishModel.setDescription("This is the description");
+
+        DishPageResponseDto dishPageResponseDto = new DishPageResponseDto();
+        dishPageResponseDto.setDescription(dishModel.getDescription());
+        dishPageResponseDto.setName(dishModel.getName());
+        dishPageResponseDto.setPrice(dishModel.getPrice());
+        dishPageResponseDto.setImageUrl(dishModel.getImageUrl());
+        dishPageResponseDto.setActive(true);
+        when(dishService.showMenu(restaurantId, categoryId, numberOfElements, token)).thenReturn(List.of(dishModel));
+        when(dishRequestMapper.toPageDto(dishModel)).thenReturn(dishPageResponseDto);
+
+
+        assertThat(dishHandler.showMenu(restaurantId, categoryId, numberOfElements, token).size()).isEqualTo(1);
     }
 }

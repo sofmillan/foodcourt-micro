@@ -1,8 +1,6 @@
 package com.pragma.powerup;
 
-import com.pragma.powerup.application.dto.response.DishResponseDto;
-import com.pragma.powerup.application.dto.response.OrderDishResponseDto;
-import com.pragma.powerup.application.dto.response.OrderPageResponseDto;
+
 import com.pragma.powerup.domain.client.TwilioClientPort;
 import com.pragma.powerup.domain.client.UserClientPort;
 import com.pragma.powerup.domain.model.*;
@@ -14,17 +12,17 @@ import com.pragma.powerup.infrastructure.out.jpa.adapter.OrderJpaAdapter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
+
 import java.util.ArrayList;
-import java.util.HashSet;
+
 import java.util.List;
-import java.util.Set;
+
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
-public class OrderUseCaseTest {
+class OrderUseCaseTest {
 
     IOrderPersistencePort orderPersistence;
     TwilioClientPort twilioClient;
@@ -109,11 +107,11 @@ public class OrderUseCaseTest {
         messageModel.setSecurityCode(code);
         messageModel.setPhoneNumber(phoneNumber);
 
-        when(userClient.findPhoneByClientId(clientId)).thenReturn(phoneNumber);
+        when(userClient.findPhoneByClientId(clientId)).thenReturn(messageModel.getPhoneNumber());
         when(twilioClient.sendMessage(messageModel)).thenReturn(false);
 
         assertThrows(RuntimeException.class,
-                ()-> orderService.sendMessage(code, clientId));
+                ()-> orderService.sendMessage(messageModel.getSecurityCode(), clientId));
     }
 
     @Test
@@ -124,7 +122,7 @@ public class OrderUseCaseTest {
         CancelModel cancelModel = new CancelModel();
         cancelModel.setPhoneNumber(phoneNumber);
 
-        when(userClient.findPhoneByClientId(clientId)).thenReturn(phoneNumber);
+        when(userClient.findPhoneByClientId(clientId)).thenReturn(cancelModel.getPhoneNumber());
         when(twilioClient.cancel(cancelModel)).thenReturn(false);
 
         assertThrows(RuntimeException.class,
