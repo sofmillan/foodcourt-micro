@@ -66,6 +66,7 @@ class DishUseCaseTest {
         dishModel.setImageUrl("http://image.png");
         dishModel.setCategoryId(3L);
         dishModel.setRestaurantId(1L);
+
         when(userClientPort.findOwnerId(token)).thenReturn(1L);
         when(dishPersistence.findDishRestaurant(dishModel.getRestaurantId())).thenReturn(1L);
 
@@ -89,7 +90,9 @@ class DishUseCaseTest {
 
     @Test
     void Should_UpdatePrice(){
-        Long dishId = 10L;
+        DishModel dishModel = new DishModel();
+        dishModel.setId(10L);
+        Long dishId = dishModel.getId();
         Map<String, Object> fields = new HashMap<>();
 
         fields.put("price",10);

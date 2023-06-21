@@ -2,13 +2,11 @@ package com.pragma.powerup;
 
 
 import com.pragma.powerup.application.dto.request.RestaurantRequestDto;
-import com.pragma.powerup.application.dto.response.DishPageResponseDto;
 import com.pragma.powerup.application.dto.response.RestaurantPageResponseDto;
 import com.pragma.powerup.application.handler.IRestaurantHandler;
 import com.pragma.powerup.application.handler.impl.RestaurantHandler;
 import com.pragma.powerup.application.mapper.IRestaurantRequestMapper;
 import com.pragma.powerup.domain.api.IRestaurantServicePort;
-import com.pragma.powerup.domain.model.DishModel;
 import com.pragma.powerup.domain.model.RestaurantModel;
 import com.pragma.powerup.domain.usecase.RestaurantUseCase;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,16 +35,6 @@ class RestaurantHandlerTest {
 
     @Test
     void Should_SaveRestaurant(){
-
-        RestaurantRequestDto requestDto = new RestaurantRequestDto();
-        requestDto.setOwnerId(1L);
-        requestDto.setNit("5255859695");
-        requestDto.setName("Subway");
-        requestDto.setPhoneNumber("+5789556");
-        requestDto.setAddress("St 26");
-        requestDto.setLogoUrl("https://logo.png");
-
-
         RestaurantModel restaurantModel = new RestaurantModel();
 
         restaurantModel.setOwnerId(1L);
@@ -55,6 +43,16 @@ class RestaurantHandlerTest {
         restaurantModel.setPhoneNumber("+5789556");
         restaurantModel.setAddress("St 26");
         restaurantModel.setLogoUrl("https://logo.png");
+        restaurantModel.setId(1L);
+
+        RestaurantRequestDto requestDto = new RestaurantRequestDto();
+        requestDto.setOwnerId(restaurantModel.getOwnerId());
+        requestDto.setNit(restaurantModel.getNit());
+        requestDto.setName(restaurantModel.getName());
+        requestDto.setPhoneNumber(restaurantModel.getPhoneNumber());
+        requestDto.setAddress(restaurantModel.getAddress());
+        requestDto.setLogoUrl(restaurantModel.getLogoUrl());
+
 
         when(restaurantRequestMapper.toRestaurant(requestDto)).thenReturn(restaurantModel);
 
@@ -64,7 +62,7 @@ class RestaurantHandlerTest {
     }
 
     @Test
-    void Should_FindRestaurants(){
+    void Should_FindOneRestaurant(){
         int numberOfElements = 1;
         RestaurantModel restaurantModel = new RestaurantModel();
         restaurantModel.setOwnerId(1L);
@@ -73,6 +71,7 @@ class RestaurantHandlerTest {
         restaurantModel.setPhoneNumber("+5789556");
         restaurantModel.setAddress("St 26");
         restaurantModel.setLogoUrl("https://logo.png");
+        restaurantModel.setId(1L);
 
         RestaurantPageResponseDto restaurantPageResponseDto = new RestaurantPageResponseDto();
         restaurantPageResponseDto.setName(restaurantModel.getName());

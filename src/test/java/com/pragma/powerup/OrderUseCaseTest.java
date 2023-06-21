@@ -19,8 +19,7 @@ import java.util.List;
 
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class OrderUseCaseTest {
@@ -64,6 +63,7 @@ class OrderUseCaseTest {
 
         orderService.addOrder(orderModel, token);
 
+        assertEquals(2, orderModel.getOrderDishes().size());
         verify(orderPersistence).addOrder(orderModel, clientId);
     }
 
