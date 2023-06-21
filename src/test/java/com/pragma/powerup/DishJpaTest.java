@@ -3,7 +3,7 @@ package com.pragma.powerup;
 import com.pragma.powerup.domain.model.DishModel;
 import com.pragma.powerup.domain.exception.DataNotFoundException;
 import com.pragma.powerup.domain.exception.NotModifiableException;
-import com.pragma.powerup.domain.model.RestaurantModel;
+
 import com.pragma.powerup.domain.spi.IDishPersistencePort;
 import com.pragma.powerup.infrastructure.out.jpa.adapter.DishJpaAdapter;
 import com.pragma.powerup.infrastructure.out.jpa.entity.CategoryEntity;
@@ -15,6 +15,7 @@ import com.pragma.powerup.infrastructure.out.jpa.repository.DishRepository;
 import com.pragma.powerup.infrastructure.out.jpa.repository.RestaurantRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -286,12 +287,8 @@ class DishJpaTest {
         when(restaurantRepository.findById(restaurantId)).thenReturn(Optional.empty());
 
         assertThrows(DataNotFoundException.class,
+
                 ()-> dishPersistence.findDishRestaurant(restaurantId));
     }
-
-
-
-
-
 
 }
