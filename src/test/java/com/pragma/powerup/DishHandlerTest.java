@@ -34,14 +34,6 @@ class DishHandlerTest {
 
     @Test
     void Should_SaveDish(){
-        DishRequestDto dishRequestDto = new DishRequestDto();
-        dishRequestDto.setRestaurantId(1L);
-        dishRequestDto.setCategoryId(2L);
-        dishRequestDto.setPrice(10000);
-        dishRequestDto.setName("Tiramisu");
-        dishRequestDto.setImageUrl("http//:image.png");
-        dishRequestDto.setDescription("This is the description");
-
         DishModel dishModel = new DishModel();
         dishModel.setRestaurantId(1L);
         dishModel.setCategoryId(2L);
@@ -49,6 +41,14 @@ class DishHandlerTest {
         dishModel.setName("Tiramisu");
         dishModel.setImageUrl("http//:image.png");
         dishModel.setDescription("This is the description");
+
+        DishRequestDto dishRequestDto = new DishRequestDto();
+        dishRequestDto.setRestaurantId(dishModel.getRestaurantId());
+        dishRequestDto.setCategoryId(dishModel.getCategoryId());
+        dishRequestDto.setPrice(dishModel.getPrice());
+        dishRequestDto.setName(dishModel.getName());
+        dishRequestDto.setImageUrl(dishModel.getImageUrl());
+        dishRequestDto.setDescription(dishModel.getDescription());
 
         when(dishRequestMapper.toDish(dishRequestDto)).thenReturn(dishModel);
 
@@ -84,20 +84,25 @@ class DishHandlerTest {
         Long restaurantId = 1L;
         Long categoryId = 1L;
         int numberOfElements = 1;
-        DishModel dishModel = new DishModel();
-        dishModel.setRestaurantId(1L);
-        dishModel.setCategoryId(2L);
-        dishModel.setPrice(10000);
-        dishModel.setName("Tiramisu");
-        dishModel.setImageUrl("http//:image.png");
-        dishModel.setDescription("This is the description");
 
         DishPageResponseDto dishPageResponseDto = new DishPageResponseDto();
-        dishPageResponseDto.setDescription(dishModel.getDescription());
-        dishPageResponseDto.setName(dishModel.getName());
-        dishPageResponseDto.setPrice(dishModel.getPrice());
-        dishPageResponseDto.setImageUrl(dishModel.getImageUrl());
+        dishPageResponseDto.setDescription("This is the description");
+        dishPageResponseDto.setName("Tiramisu");
+        dishPageResponseDto.setPrice(10);
+        dishPageResponseDto.setImageUrl("http//:image.png");
         dishPageResponseDto.setActive(true);
+
+        DishModel dishModel = new DishModel();
+        dishModel.setId(1L);
+        dishModel.setRestaurantId(1L);
+        dishModel.setCategoryId(2L);
+        dishModel.setActive(dishPageResponseDto.isActive());
+        dishModel.setPrice(dishPageResponseDto.getPrice());
+        dishModel.setName(dishPageResponseDto.getName());
+        dishModel.setImageUrl(dishPageResponseDto.getImageUrl());
+        dishModel.setDescription(dishPageResponseDto.getDescription());
+
+
         when(dishService.showMenu(restaurantId, categoryId, numberOfElements, token)).thenReturn(List.of(dishModel));
         when(dishRequestMapper.toPageDto(dishModel)).thenReturn(dishPageResponseDto);
 

@@ -20,6 +20,7 @@ import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 class OrderUseCaseTest {
@@ -115,6 +116,23 @@ class OrderUseCaseTest {
     }
 
     @Test
+    void SendMessage_Should_ThrowException_When_ErrorUsingTwilio(){
+        String code = "zb1";
+        Long clientId = 10L;
+        String phoneNumber = "+578444154";
+
+        MessageModel messageModel = new MessageModel();
+        messageModel.setSecurityCode(code);
+        messageModel.setPhoneNumber(phoneNumber);
+
+        when(userClient.findPhoneByClientId(clientId)).thenReturn(messageModel.getPhoneNumber());
+        when(twilioClient.sendMessage(messageModel)).thenThrow(RuntimeException.class);
+
+        assertThrows(RuntimeException.class,
+                ()-> orderService.sendMessage(messageModel.getSecurityCode(), clientId));
+    }
+
+    @Test
     void CancelOrder_Should_ThrowException_When_TwilioServiceCannotBeUsed(){
         Long clientId = 10L;
         String phoneNumber = "+578444154";
@@ -124,6 +142,25 @@ class OrderUseCaseTest {
 
         when(userClient.findPhoneByClientId(clientId)).thenReturn(cancelModel.getPhoneNumber());
         when(twilioClient.cancel(cancelModel)).thenReturn(false);
+
+        assertThrows(RuntimeException.class,
+                ()-> orderService.cancelOrderTwilio(clientId));
+    }
+
+
+
+
+    @Test
+    void CancelOrder_Should_ThrowException_When_ErrorUsingTwilio(){
+        Long clientId = 10L;
+        String phoneNumber = "+578444154";
+
+        CancelModel cancelModel = new CancelModel();
+        cancelModel.setPhoneNumber(phoneNumber);
+
+
+        when(userClient.findPhoneByClientId(clientId)).thenReturn(cancelModel.getPhoneNumber());
+        when(twilioClient.cancel(cancelModel)).thenThrow(RuntimeException.class);
 
         assertThrows(RuntimeException.class,
                 ()-> orderService.cancelOrderTwilio(clientId));

@@ -52,7 +52,7 @@ class RestEmployeeUseCaseTest {
         restaurantEmployeeModel.setUserId(1L);
         restaurantEmployeeModel.setRestaurantId(2L);
 
-        Long ownerId = 3L;
+        Long ownerId = restaurantEmployeeModel.getUserId();
 
         when(userClientPort.findOwnerId(token)).thenReturn(ownerId);
         when(restEmployeePersistence.findRightOwner(ownerId, restaurantEmployeeModel.getRestaurantId())).thenReturn(false);
