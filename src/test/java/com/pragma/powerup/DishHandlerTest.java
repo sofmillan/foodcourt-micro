@@ -86,13 +86,13 @@ class DishHandlerTest {
         int numberOfElements = 1;
 
         DishPageResponseDto dishPageResponseDto = new DishPageResponseDto();
+        DishModel dishModel = new DishModel();
+
         dishPageResponseDto.setDescription("This is the description");
         dishPageResponseDto.setName("Tiramisu");
         dishPageResponseDto.setPrice(10);
         dishPageResponseDto.setImageUrl("http//:image.png");
-        dishPageResponseDto.setActive(true);
 
-        DishModel dishModel = new DishModel();
         dishModel.setId(1L);
         dishModel.setRestaurantId(1L);
         dishModel.setCategoryId(2L);
@@ -101,7 +101,8 @@ class DishHandlerTest {
         dishModel.setName(dishPageResponseDto.getName());
         dishModel.setImageUrl(dishPageResponseDto.getImageUrl());
         dishModel.setDescription(dishPageResponseDto.getDescription());
-
+        dishModel.setActive(true);
+        dishPageResponseDto.setActive(dishModel.isActive());
 
         when(dishService.showMenu(restaurantId, categoryId, numberOfElements, token)).thenReturn(List.of(dishModel));
         when(dishRequestMapper.toPageDto(dishModel)).thenReturn(dishPageResponseDto);
