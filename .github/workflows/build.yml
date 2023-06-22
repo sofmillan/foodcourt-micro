@@ -89,3 +89,28 @@ jobs:
           docker build -t ${{env.AWS_ECR_REPO_NAME}} .
           docker tag ${{env.AWS_ECR_REPO_NAME}}:latest ${{env.AWS_ECR_REPO_LINK}}:latest
           docker push ${{env.AWS_ECR_REPO_LINK}}:latest
+
+  deploy-eb:
+    needs: deploy-ecr
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
+      - name: Deploy to EB
+        id: deploy
+        uses: einaregilsson/beanstalk-deploy@v21
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          application_name: ${{ env.AWS_EB_APPLICATION }}
+          environment_name: ${{ env.AWS_EB_ENVIRONMENT }}
+          version_label: 'foodcourt-service-source'
+          region: ${{ env.AWS_REGION }}
+          use_existing_version_if_available: true
+      - name: Message
+        if: always() && steps.deploy.outcome == 'failure'
+        uses: teknatha136/actions-google-chat-text-message@main
+        with:
+          google-chat-webhook: ${{ secrets.GOOGLE_CHAT_WEBHOOK }}
+          text-message: Deploy failure. Environment ${{  env.AWS_EB_ENVIRONMENT  }}
