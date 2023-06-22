@@ -5,16 +5,26 @@ on:
       - main
   pull_request:
     types: [opened, synchronize, reopened]
+
+env:
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+  USERNAME: ${{ secrets.USERNAME }}
+  PASSWORD: ${{ secrets.PASSWORD }}
+  TWILIO_URL: ${{ secrets.TWILIO_URL }}
+  CLIENT_URL: ${{ secrets.CLIENT_URL }}
+  AWS_REGION: 'us-east-2'
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_ECR_REPO_NAME: 'foodcourt-registry'
+  AWS_ECR_REPO_LINK: '378462941125.dkr.ecr.us-east-2.amazonaws.com/foodcourt-registry'
+  AWS_ECR_REPO_PATH: '378462941125.dkr.ecr.us-east-2.amazonaws.com'
+  AWS_EB_ENVIRONMENT: 'Foodcourt-service-env'
+  AWS_EB_APPLICATION: 'foodcourt-service'
+
 jobs:
   build:
     name: Build and analyze
     runs-on: ubuntu-latest
-    env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      USERNAME: ${{ secrets.USERNAME }}
-      PASSWORD: ${{ secrets.PASSWORD }}
-      TWILIO_URL: ${{ secrets.TWILIO_URL }}
-      CLIENT_URL: ${{ secrets.CLIENT_URL }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -38,8 +48,63 @@ jobs:
           restore-keys: ${{ runner.os }}-gradle
       - name: Make gradlew executable
         run: chmod +x ./gradlew
+      - name: run all tests
+        run: ./gradlew testClasses
       - name: Build and analyze
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: ./gradlew build sonarqube --info
+
+  deploy-ecr:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+      - name: Validate Gradle wrapper
+        uses: gradle/wrapper-validation-action@ccb4328a959376b642e027874838f60f8e596de3
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@749f47bda3e44aa060e82d7b3ef7e40d953bd629
+        with:
+          arguments: build
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Package
+          path: build/libs
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+      - name: Build and push Docker image to ECR
+        uses: aws-actions/amazon-ecr-login@v1
+      - name: Build and push Docker image to ECR
+        run: |
+          aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin ${{env.AWS_ECR_REPO_PATH}}
+          docker build -t ${{env.AWS_ECR_REPO_NAME}} .
+          docker tag ${{env.AWS_ECR_REPO_NAME}}:latest ${{env.AWS_ECR_REPO_LINK}}:latest
+          docker push ${{env.AWS_ECR_REPO_LINK}}:latest   
+
+  deploy-eb:
+    needs: deploy-ecr
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
+      - name: Deploy to EB
+        uses: einaregilsson/beanstalk-deploy@v21
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          application_name: ${{ env.AWS_EB_APPLICATION }}
+          environment_name: ${{ env.AWS_EB_ENVIRONMENT }}
+          version_label: 'foodcourt-service-source'
+          region: ${{ env.AWS_REGION }}
+          use_existing_version_if_available: true
