@@ -48,7 +48,7 @@ jobs:
           restore-keys: ${{ runner.os }}-gradle
       - name: Make gradlew executable
         run: chmod +x ./gradlew
-      - name: run all tests
+      - name: Run all tests
         run: ./gradlew testClasses
       - name: Build and analyze
         env:
@@ -81,7 +81,7 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
           aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
-      - name: Build and push Docker image to ECR
+      - name: Configure login
         uses: aws-actions/amazon-ecr-login@v1
       - name: Build and push Docker image to ECR
         run: |
@@ -108,7 +108,7 @@ jobs:
           version_label: 'foodcourt-service-source'
           region: ${{ env.AWS_REGION }}
           use_existing_version_if_available: true
-      - name: Message
+      - name: Send deploy failure message
         if: always() && steps.deploy.outcome == 'failure'
         uses: teknatha136/actions-google-chat-text-message@main
         with:
